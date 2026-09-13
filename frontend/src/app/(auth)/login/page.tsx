@@ -1,18 +1,53 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Activity } from 'lucide-react'
+import { Activity, Mail, Lock, Eye, EyeOff, ArrowRight, ArrowLeft, MessageCircle, FileText, Heart, Sparkles, RotateCw } from 'lucide-react'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [resending, setResending] = useState(false)
+  const [resendStatus, setResendStatus] = useState<string | null>(null)
   const router = useRouter()
   const supabase = createClient()
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      const urlError = params.get('error')
+      if (urlError) {
+        setError(urlError)
+      }
+    }
+  }, [])
+
+  const handleResendConfirmation = async () => {
+    if (!email) {
+      setError('Please enter your email address to resend confirmation.')
+      return
+    }
+    setResending(true)
+    setResendStatus(null)
+    const { error: resendErr } = await supabase.auth.resend({
+      type: 'signup',
+      email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`
+      }
+    })
+    if (resendErr) {
+      setResendStatus(`Failed: ${resendErr.message}`)
+    } else {
+      setResendStatus(`Verification email resent to ${email}! Please check your inbox.`)
+    }
+    setResending(false)
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -33,96 +68,241 @@ export default function LoginPage() {
     }
   }
 
+  const handleGoogleLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
+      })
+      if (error) setError(error.message)
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred")
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-[var(--color-bg-primary)] flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-10">
-          <Activity className="w-16 h-16 mx-auto text-[var(--color-accent-cyan)] mb-4 drop-shadow-[0_0_15px_var(--color-accent-glow)]" />
-          <h1 className="text-4xl font-bold text-white mb-2">CuraMind</h1>
-          <p className="text-[var(--color-text-muted)]">Sign in to your medical assistant</p>
-        </div>
+    <div className="min-h-screen w-full flex bg-[#F0F5FA] font-sans text-[#0F172A] relative overflow-hidden">
+      {/* Background Decorative Gradients */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden z-0">
+         <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] bg-blue-100/60 blur-[120px] rounded-full"></div>
+         <div className="absolute bottom-[10%] left-[20%] w-[40%] h-[40%] bg-purple-100/60 blur-[120px] rounded-full"></div>
+         <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-blue-100/40 blur-[100px] rounded-full"></div>
+      </div>
 
-        <div className="glass-panel p-8">
-          {error && <div className="mb-4 p-3 bg-[var(--color-danger)]/20 border border-[var(--color-danger)]/50 text-[var(--color-danger)] rounded-lg text-sm">{error}</div>}
+      <div className="w-full max-w-[1400px] mx-auto flex flex-col lg:flex-row relative z-10 p-6 sm:p-8 lg:p-12 gap-8 lg:gap-16 items-center lg:items-stretch">
+        
+        {/* Left Content Column */}
+        <div className="hidden lg:flex flex-1 w-full max-w-xl flex-col justify-center pt-8 lg:pt-0">
           
-          <form onSubmit={handleLogin} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-[var(--color-text-muted)] mb-2">Email Address</label>
-              <input 
-                type="email" 
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-[var(--color-bg-primary)] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[var(--color-accent-cyan)] focus:ring-1 focus:ring-[var(--color-accent-cyan)] transition-all"
-                placeholder="you@example.com"
-              />
+          {/* Logo (Top Left) */}
+          <Link href="/" className="flex items-center gap-3 mb-12 hover:opacity-85 transition-opacity w-fit cursor-pointer">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white shadow-lg">
+              <Activity size={24} />
             </div>
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-medium text-[var(--color-text-muted)]">Password</label>
-                <button 
-                  type="button"
-                  onClick={() => router.push('/forgot-password')}
-                  className="text-xs text-[var(--color-accent-blue)] hover:text-[var(--color-accent-cyan)] transition-colors"
-                >
-                  Forgot password?
-                </button>
-              </div>
-              <input 
-                type="password" 
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-[var(--color-bg-primary)] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[var(--color-accent-cyan)] focus:ring-1 focus:ring-[var(--color-accent-cyan)] transition-all"
-                placeholder="••••••••"
-              />
+            <div className="flex flex-col">
+              <span className="font-bold text-2xl tracking-tight text-[#0F172A]">CuraMind <span className="text-blue-600">AI</span></span>
+              <span className="text-[10px] text-gray-500 font-medium">Your Health. Our Intelligence.</span>
             </div>
-            
-            <button 
-              type="submit" 
-              disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-[var(--color-accent-blue)] to-[var(--color-accent-cyan)] rounded-xl text-white font-semibold hover:opacity-90 transition-opacity shadow-[0_0_20px_var(--color-accent-glow)] disabled:opacity-50"
-            >
-              {loading ? 'Signing in...' : 'Sign In'}
-            </button>
-          </form>
+          </Link>
 
-          <div className="mt-6 flex items-center justify-between">
-            <hr className="w-full border-white/10" />
-            <span className="px-2 text-sm text-[var(--color-text-muted)]">OR</span>
-            <hr className="w-full border-white/10" />
+          {/* Tag */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-xs font-semibold w-fit mb-6">
+            <Sparkles size={14} /> Smarter Healthcare
           </div>
 
-          <button 
-            type="button"
-            onClick={async () => {
-              try {
-                const { error } = await supabase.auth.signInWithOAuth({
-                  provider: 'google',
-                  options: {
-                    redirectTo: `${window.location.origin}/auth/callback`
-                  }
-                })
-                if (error) setError(error.message)
-              } catch (err: any) {
-                setError(err.message || "An unexpected error occurred")
-              }
-            }}
-            className="mt-6 w-full py-3 bg-[var(--color-bg-secondary)] border border-white/10 rounded-xl text-white font-semibold hover:bg-[var(--color-accent-blue)]/20 transition-colors flex items-center justify-center gap-3"
-          >
-            <svg className="w-5 h-5" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-              <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-              <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-              <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-            </svg>
-            Continue with Google
-          </button>
+          {/* Hero Text */}
+          <h1 className="text-4xl sm:text-5xl lg:text-[56px] font-extrabold leading-[1.1] tracking-tight mb-6 text-[#0F172A]">
+            Better Health <br />
+            Starts with <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">Smarter Support</span>
+          </h1>
 
-          <p className="mt-6 text-center text-sm text-[var(--color-text-muted)]">
-            Don't have an account? <Link href="/signup" className="text-[var(--color-accent-cyan)] hover:underline">Sign up</Link>
+          <p className="text-gray-500 text-base md:text-lg max-w-md leading-relaxed mb-10">
+            Your personal AI health assistant, helping you understand, manage, and take control of your health — anytime, anywhere.
           </p>
+
+          {/* Feature List */}
+          <div className="space-y-6 max-w-md">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center shrink-0">
+                <MessageCircle size={20} />
+              </div>
+              <div>
+                <h3 className="font-bold text-[#0F172A]">Ask Questions</h3>
+                <p className="text-sm text-gray-500">Get instant, reliable answers</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center shrink-0">
+                <FileText size={20} />
+              </div>
+              <div>
+                <h3 className="font-bold text-[#0F172A]">Understand Reports</h3>
+                <p className="text-sm text-gray-500">Simplify complex medical reports</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center shrink-0">
+                <Heart size={20} />
+              </div>
+              <div>
+                <h3 className="font-bold text-[#0F172A]">Take Better Care</h3>
+                <p className="text-sm text-gray-500">Personalized insights for a healthier you</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Floating Text Decorative */}
+          <div className="mt-12 font-medium text-blue-400/80 text-xl tracking-tight -rotate-6" style={{ fontFamily: "'Caveat', 'Comic Sans MS', cursive" }}>
+            People <br/>
+            Technology <br/>
+            Better Health <br/>
+            Together
+          </div>
         </div>
+
+        {/* Right Column: Login Card */}
+        <div className="flex-1 w-full max-w-md lg:max-w-lg flex items-center justify-center relative mx-auto lg:mx-0">
+          
+          <div className="w-full bg-white/95 backdrop-blur-xl rounded-[32px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] border border-white p-8 sm:p-12 relative z-10">
+            
+            {/* Top Navigation Row: Back to Home */}
+            <div className="flex items-center justify-between mb-6">
+              <Link 
+                href="/" 
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-blue-600 transition-colors py-1.5 px-3 rounded-full hover:bg-slate-100/80 border border-slate-100"
+              >
+                <ArrowLeft size={14} /> Back to Home
+              </Link>
+            </div>
+
+            {/* Mobile/Card Header */}
+            <div className="text-center mb-10">
+              <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20 mb-4">
+                <Activity size={32} />
+              </div>
+              <h2 className="text-2xl font-bold text-[#0F172A] mb-2">CuraMind <span className="text-blue-600">AI</span></h2>
+              <p className="text-sm text-gray-500">Sign in to your medical assistant</p>
+            </div>
+
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl text-xs text-red-600 text-center space-y-2">
+                <p className="font-medium">{error}</p>
+                {error.toLowerCase().includes('not confirmed') && (
+                  <button 
+                    type="button"
+                    onClick={handleResendConfirmation}
+                    disabled={resending}
+                    className="inline-flex items-center gap-1.5 font-semibold text-blue-600 hover:text-blue-700 underline cursor-pointer disabled:opacity-50"
+                  >
+                    <RotateCw size={12} className={resending ? 'animate-spin' : ''} />
+                    {resending ? 'Resending...' : 'Click here to resend verification email'}
+                  </button>
+                )}
+              </div>
+            )}
+
+            {resendStatus && (
+              <div className={`mb-6 p-3 rounded-2xl text-xs text-center ${resendStatus.startsWith('Failed') ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-700 border border-green-100'}`}>
+                {resendStatus}
+              </div>
+            )}
+
+            <form onSubmit={handleLogin} className="space-y-5">
+              <div>
+                <label className="block text-sm font-medium text-[#0F172A] mb-2">Email Address</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                    <Mail size={18} />
+                  </div>
+                  <input 
+                    type="email" 
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-white border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-[#0F172A] text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-gray-400"
+                    placeholder="you@example.com"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-medium text-[#0F172A]">Password</label>
+                  <button 
+                    type="button"
+                    onClick={() => router.push('/forgot-password')}
+                    className="text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                    <Lock size={18} />
+                  </div>
+                  <input 
+                    type={showPassword ? "text" : "password"} 
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-white border border-gray-200 rounded-2xl pl-11 pr-12 py-3.5 text-[#0F172A] text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-gray-400"
+                    placeholder="Enter your password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+              
+              <button 
+                type="submit" 
+                disabled={loading}
+                className="w-full py-4 mt-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl text-white font-semibold hover:opacity-95 transition-all shadow-lg shadow-blue-500/25 disabled:opacity-50 flex items-center justify-center gap-2 group"
+              >
+                {loading ? 'Signing in...' : (
+                  <>
+                    Sign In <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+                  </>
+                )}
+              </button>
+            </form>
+
+            <div className="mt-8 flex items-center justify-between">
+              <hr className="w-full border-gray-100" />
+              <span className="px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">OR</span>
+              <hr className="w-full border-gray-100" />
+            </div>
+
+            <button 
+              type="button"
+              onClick={handleGoogleLogin}
+              className="mt-8 w-full py-3.5 bg-white border border-gray-200 rounded-2xl text-[#0F172A] font-semibold hover:bg-gray-50 transition-colors flex items-center justify-center gap-3 shadow-sm"
+            >
+              <svg className="w-5 h-5" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+              </svg>
+              Continue with Google
+            </button>
+
+            <p className="mt-8 text-center text-sm text-gray-500">
+              Don't have an account? <Link href="/signup" className="text-blue-600 font-semibold hover:underline">Sign up</Link>
+            </p>
+          </div>
+
+          {/* Decorative graphic element behind the card */}
+          <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-blue-200/50 rounded-full blur-[80px] -z-10"></div>
+        </div>
+
       </div>
     </div>
   )

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { TrendingUp, Loader2, ArrowUp, ArrowDown, Minus, Activity } from 'lucide-react';
+import { TrendingUp, Loader2, ArrowUp, ArrowDown, Minus } from 'lucide-react';
 
 export function HealthTrends({ profileId }: { profileId: string }) {
   const [data, setData] = useState<any[]>([]);
@@ -17,7 +17,7 @@ export function HealthTrends({ profileId }: { profileId: string }) {
       if (!profileId) return;
       const supabase = createClient();
       
-      const { data: metrics, error } = await supabase
+      const { data: metrics } = await supabase
         .from('metrics')
         .select('*')
         .eq('profile_id', profileId)
@@ -52,8 +52,8 @@ export function HealthTrends({ profileId }: { profileId: string }) {
 
   if (loading) {
     return (
-      <div className="glass-panel p-6 rounded-2xl flex justify-center items-center h-64 border border-[var(--color-accent-blue)]/30">
-        <Loader2 className="animate-spin text-[var(--color-accent-cyan)]" size={32} />
+      <div className="bg-white p-6 rounded-3xl flex justify-center items-center h-64 border border-slate-200/80 shadow-sm">
+        <Loader2 className="animate-spin text-[#0284C7]" size={32} />
       </div>
     );
   }
@@ -63,16 +63,19 @@ export function HealthTrends({ profileId }: { profileId: string }) {
   }
 
   return (
-    <div className="glass-panel p-6 rounded-2xl border border-[var(--color-accent-blue)]/30">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-        <h2 className="text-xl font-bold text-white flex items-center gap-2">
-          <TrendingUp className="text-[var(--color-accent-cyan)]" /> Health Trends
+    <div className="bg-white p-6 md:p-8 rounded-3xl border border-slate-200/80 shadow-sm">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <h2 className="text-xl font-bold text-[#0F172A] flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-sky-50 text-[#0284C7] flex items-center justify-center border border-sky-100">
+            <TrendingUp size={18} />
+          </div>
+          Health Trends
         </h2>
         
         <select 
           value={selectedMetric}
           onChange={(e) => setSelectedMetric(e.target.value)}
-          className="mt-4 md:mt-0 bg-[var(--color-bg-secondary)] border border-white/10 text-white rounded-lg px-4 py-2 outline-none focus:border-[var(--color-accent-cyan)] transition-colors"
+          className="bg-slate-50 border border-slate-200 text-[#0F172A] text-sm font-semibold rounded-xl px-4 py-2 outline-none focus:border-[#0284C7] transition-colors"
         >
           {availableMetrics.map(m => (
             <option key={m} value={m}>{m}</option>
@@ -83,7 +86,6 @@ export function HealthTrends({ profileId }: { profileId: string }) {
       {/* Metric Slots Carousel */}
       <div className="flex gap-4 overflow-x-auto pb-4 mb-6 custom-scrollbar scroll-smooth">
         {availableMetrics.map(metric => {
-           // Find all data points for this metric
            const points = rawMetrics.filter(m => m.metric_name === metric).sort((a, b) => new Date(a.date_recorded).getTime() - new Date(b.date_recorded).getTime());
            if (points.length === 0) return null;
            
@@ -96,10 +98,9 @@ export function HealthTrends({ profileId }: { profileId: string }) {
                else if (latest.metric_value < prev.metric_value) trend = 'down';
            }
            
-           // Determine color based on flag
            const colorClass = latest.flag === 'high' || latest.flag === 'low' 
-               ? 'text-[var(--color-danger)]' 
-               : 'text-[var(--color-success)]';
+               ? 'text-red-500' 
+               : 'text-emerald-600';
                
            const isActive = selectedMetric === metric;
            
@@ -107,21 +108,21 @@ export function HealthTrends({ profileId }: { profileId: string }) {
              <div 
                key={metric} 
                onClick={() => setSelectedMetric(metric)}
-               className={`min-w-[160px] p-4 rounded-xl cursor-pointer transition-all border ${
+               className={`min-w-[160px] p-4 rounded-2xl cursor-pointer transition-all border ${
                  isActive 
-                   ? 'bg-[var(--color-accent-blue)]/20 border-[var(--color-accent-cyan)] shadow-[0_0_15px_var(--color-accent-glow)]' 
-                   : 'glass-panel border-white/10 hover:border-white/30'
+                   ? 'bg-sky-50/80 border-[#0284C7] shadow-sm' 
+                   : 'bg-slate-50/70 border-slate-200/80 hover:border-slate-300 hover:bg-slate-100/70'
                }`}
              >
                <div className="flex items-center justify-between mb-2">
-                 <span className="text-sm font-medium text-[var(--color-text-muted)] truncate pr-2">{metric}</span>
-                 {trend === 'up' && <ArrowUp size={16} className="text-[var(--color-warning)]" />}
-                 {trend === 'down' && <ArrowDown size={16} className="text-[var(--color-accent-cyan)]" />}
-                 {trend === 'stable' && <Minus size={16} className="text-[var(--color-text-muted)]" />}
+                 <span className="text-xs font-semibold text-slate-500 truncate pr-2">{metric}</span>
+                 {trend === 'up' && <ArrowUp size={15} className="text-amber-500" />}
+                 {trend === 'down' && <ArrowDown size={15} className="text-[#0284C7]" />}
+                 {trend === 'stable' && <Minus size={15} className="text-slate-400" />}
                </div>
                <div className="flex items-baseline gap-1">
                  <span className={`text-2xl font-bold ${colorClass}`}>{latest.metric_value}</span>
-                 <span className="text-xs text-[var(--color-text-muted)]">{latest.unit}</span>
+                 <span className="text-xs text-slate-400 font-medium">{latest.unit}</span>
                </div>
              </div>
            )
@@ -131,20 +132,20 @@ export function HealthTrends({ profileId }: { profileId: string }) {
       <div className="h-72 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#ffffff1a" vertical={false} />
-            <XAxis dataKey="date" stroke="#8892b0" fontSize={12} tickLine={false} axisLine={false} />
-            <YAxis stroke="#8892b0" fontSize={12} tickLine={false} axisLine={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+            <XAxis dataKey="date" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+            <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
             <Tooltip 
-              contentStyle={{ backgroundColor: '#112240', border: '1px solid #233554', borderRadius: '8px', color: '#fff' }}
-              itemStyle={{ color: '#64ffda' }}
+              contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.06)', color: '#0f172a' }}
+              itemStyle={{ color: '#0284C7', fontWeight: 600 }}
             />
             <Line 
               type="monotone" 
               dataKey={selectedMetric} 
-              stroke="#64ffda" 
+              stroke="#0284C7" 
               strokeWidth={3}
-              dot={{ r: 4, fill: '#64ffda', strokeWidth: 0 }}
-              activeDot={{ r: 6, fill: '#fff', stroke: '#64ffda', strokeWidth: 2 }}
+              dot={{ r: 4, fill: '#0284C7', strokeWidth: 0 }}
+              activeDot={{ r: 6, fill: '#ffffff', stroke: '#0284C7', strokeWidth: 2 }}
             />
           </LineChart>
         </ResponsiveContainer>

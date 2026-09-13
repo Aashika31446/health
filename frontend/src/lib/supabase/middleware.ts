@@ -32,14 +32,11 @@ export async function updateSession(request: NextRequest) {
   // issues with users being randomly logged out.
 
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
-  
-  const user = session?.user
+    data: { user },
+  } = await supabase.auth.getUser()
 
   if (user) {
     if (
-      request.nextUrl.pathname === '/' ||
       request.nextUrl.pathname.startsWith('/login') ||
       request.nextUrl.pathname.startsWith('/signup')
     ) {
@@ -51,10 +48,19 @@ export async function updateSession(request: NextRequest) {
     if (
       !request.nextUrl.pathname.startsWith('/login') &&
       !request.nextUrl.pathname.startsWith('/signup') &&
+      !request.nextUrl.pathname.startsWith('/forgot-password') &&
+      !request.nextUrl.pathname.startsWith('/update-password') &&
+      !request.nextUrl.pathname.startsWith('/auth') &&
       !request.nextUrl.pathname.startsWith('/shared') &&
+      !request.nextUrl.pathname.startsWith('/api') &&
+      !request.nextUrl.pathname.startsWith('/features') &&
+      !request.nextUrl.pathname.startsWith('/how-it-works') &&
+      !request.nextUrl.pathname.startsWith('/pricing') &&
+      !request.nextUrl.pathname.startsWith('/about') &&
+      !request.nextUrl.pathname.includes('.') &&
       request.nextUrl.pathname !== '/'
     ) {
-      // no user, potentially respond by redirecting the user to the login page
+      // no user, potentially respond by redirecting the user to the home/login page
       const url = request.nextUrl.clone()
       url.pathname = '/'
       return NextResponse.redirect(url)

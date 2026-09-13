@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Suspense } from "react";
 import "./globals.css";
+import TopProgressBar from "@/components/ui/TopProgressBar";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -16,12 +17,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <body
-        className={`${inter.variable} font-sans antialiased bg-[var(--background)] text-[var(--foreground)] min-h-screen`}
+        className={`${inter.variable} ${inter.className} font-sans antialiased bg-[var(--background)] text-[var(--foreground)] min-h-screen`}
       >
+        <Suspense fallback={null}>
+          <TopProgressBar />
+        </Suspense>
         {children}
-        <SpeedInsights />
       </body>
     </html>
   );

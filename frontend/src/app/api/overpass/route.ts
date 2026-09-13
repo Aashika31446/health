@@ -29,10 +29,13 @@ export async function POST(req: Request) {
         clearTimeout(timeoutId);
 
         if (res.ok) {
-          const data = await res.json();
-          if (data && Array.isArray(data.elements)) {
-            return NextResponse.json(data);
-          }
+          const text = await res.text();
+          try {
+            const data = JSON.parse(text);
+            if (data && Array.isArray(data.elements)) {
+              return NextResponse.json(data);
+            }
+          } catch {}
         }
       } catch (err) {
         // Continue to next mirror on timeout or error
@@ -45,4 +48,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ elements: [] }, { status: 200 });
   }
 }
-

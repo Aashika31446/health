@@ -60,13 +60,25 @@ export function UploadArea() {
   const handleFiles = async (newFiles: File[]) => {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
+    const currentUserId = user?.id || 'default-user'
+
+    const MAX_SIZE = 25 * 1024 * 1024; // 25 MB
+    const ALLOWED_REGEX = /\.(pdf|jpg|jpeg|png|webp|bmp)$/i;
 
     for (const f of newFiles) {
+      if (f.size > MAX_SIZE) {
+        alert(`"${f.name}" is too large. Maximum allowed file size is 25MB.`);
+        continue;
+      }
+      if (!ALLOWED_REGEX.test(f.name)) {
+        alert(`"${f.name}" has an unsupported format. Supported formats: PDF, JPG, PNG, WEBP, BMP.`);
+        continue;
+      }
+
       const newFileObj: UploadedFile = {
         name: f.name,
         status: 'pending',
-        type: f.name.endsWith('.pdf') ? 'report' : 'image'
+        type: f.name.toLowerCase().endsWith('.pdf') ? 'report' : 'image'
       }
       
       setFiles(prev => [...prev, newFileObj])
@@ -75,12 +87,13 @@ export function UploadArea() {
       try {
         const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
         // Create a new chat session for this report
-        const sessionRes = await fetch(`${baseUrl}/api/chat/sessions?user_id=${user.id}&title=Report:%20${encodeURIComponent(f.name)}`, { method: 'POST' })
+        const sessionRes = await fetch(`${baseUrl}/api/chat/sessions?user_id=${currentUserId}&title=Report:%20${encodeURIComponent(f.name.substring(0, 30))}`, { method: 'POST' })
         const session = await sessionRes.json()
 
         const formData = new FormData()
         formData.append('file', f)
         formData.append('session_id', session.id)
+        formData.append('user_id', currentUserId)
 
         setFiles(prev => {
           const arr = [...prev]
