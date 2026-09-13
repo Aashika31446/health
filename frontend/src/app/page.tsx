@@ -18,45 +18,48 @@ import AboutJourney from '@/components/About/AboutJourney';
 import AboutWhy from '@/components/About/AboutWhy';
 import AboutTeam from '@/components/About/AboutTeam';
 import AboutCTA from '@/components/About/AboutCTA';
+import PageTransition from '@/components/ui/PageTransition';
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] font-sans">
       <Navbar />
-      <Hero />
-      <ProblemSolution />
-      
-      {/* Features Section - Visible on scroll */}
-      <div id="features" className="mt-20">
-        <FeaturesHero />
-        <FeaturesBentoGrid />
-        <FeaturesCTA />
-      </div>
+      <PageTransition className="w-full flex flex-col pt-20">
+        <Hero />
+        <ProblemSolution />
+        
+        {/* Features Section - Visible on scroll */}
+        <div id="features" className="mt-20 scroll-mt-24">
+          <FeaturesHero />
+          <FeaturesBentoGrid />
+          <FeaturesCTA />
+        </div>
 
-      {/* How It Works Section - Visible on scroll */}
-      <div id="how-it-works" className="mt-20">
-        <HowItWorksHero />
-        <HowItWorksSteps />
-        <HowItWorksBottom />
-      </div>
+        {/* How It Works Section - Visible on scroll */}
+        <div id="how-it-works" className="mt-20 scroll-mt-24">
+          <HowItWorksHero />
+          <HowItWorksSteps />
+          <HowItWorksBottom />
+        </div>
 
-      {/* Pricing Section - Visible on scroll */}
-      <div id="pricing" className="mt-20">
-        <PricingHero />
-        <PricingCards />
-        <PricingFeatures />
-        <PricingCTA />
-      </div>
+        {/* Pricing Section - Visible on scroll */}
+        <div id="pricing" className="mt-20 scroll-mt-24">
+          <PricingHero />
+          <PricingCards />
+          <PricingFeatures />
+          <PricingCTA />
+        </div>
 
-      {/* About Section - Visible on scroll */}
-      <div id="about" className="mt-20">
-        <AboutHero />
-        <AboutPurpose />
-        <AboutJourney />
-        <AboutWhy />
-        <AboutTeam />
-        <AboutCTA />
-      </div>
+        {/* About Section - Visible on scroll */}
+        <div id="about" className="mt-20 scroll-mt-24">
+          <AboutHero />
+          <AboutPurpose />
+          <AboutJourney />
+          <AboutWhy />
+          <AboutTeam />
+          <AboutCTA />
+        </div>
+      </PageTransition>
     </div>
   );
 }

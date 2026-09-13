@@ -1,5 +1,8 @@
+"use client";
+
 import React from 'react';
 import { ArrowRight, Target, Eye, Gem, Accessibility, CheckCircle2, Heart, ShieldCheck, Zap } from 'lucide-react';
+import InteractiveTiltCard from '@/components/ui/InteractiveTiltCard';
 
 export default function AboutPurpose() {
   return (
@@ -31,7 +34,12 @@ export default function AboutPurpose() {
         <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6">
           
           {/* Mission Card */}
-          <div className="bg-white rounded-[24px] border border-gray-100 shadow-sm p-8 hover:shadow-md transition-shadow">
+          <InteractiveTiltCard
+            containerClassName="h-full flex flex-col"
+            className="bg-white rounded-[24px] border border-gray-100 shadow-sm p-8 h-full flex flex-col"
+            glowColor="rgba(2, 132, 199, 0.08)"
+            borderGlowColor="rgba(56, 189, 248, 0.45)"
+          >
             <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center mb-6">
               <Target size={24} />
             </div>
@@ -39,10 +47,15 @@ export default function AboutPurpose() {
             <p className="text-[#64748B] text-sm leading-relaxed">
               To empower individuals with clear, accurate, and easy-to-understand health insights through AI.
             </p>
-          </div>
+          </InteractiveTiltCard>
 
           {/* Vision Card */}
-          <div className="bg-white rounded-[24px] border border-gray-100 shadow-sm p-8 hover:shadow-md transition-shadow">
+          <InteractiveTiltCard
+            containerClassName="h-full flex flex-col"
+            className="bg-white rounded-[24px] border border-gray-100 shadow-sm p-8 h-full flex flex-col"
+            glowColor="rgba(168, 85, 247, 0.08)"
+            borderGlowColor="rgba(168, 85, 247, 0.45)"
+          >
             <div className="w-12 h-12 rounded-full bg-purple-50 text-purple-500 flex items-center justify-center mb-6">
               <Eye size={24} />
             </div>
@@ -50,10 +63,15 @@ export default function AboutPurpose() {
             <p className="text-[#64748B] text-sm leading-relaxed">
               A world where everyone has access to personalized health understanding, leading to healthier and happier lives.
             </p>
-          </div>
+          </InteractiveTiltCard>
 
           {/* Values Card */}
-          <div className="bg-white rounded-[24px] border border-gray-100 shadow-sm p-8 hover:shadow-md transition-shadow">
+          <InteractiveTiltCard
+            containerClassName="h-full flex flex-col"
+            className="bg-white rounded-[24px] border border-gray-100 shadow-sm p-8 h-full flex flex-col"
+            glowColor="rgba(2, 132, 199, 0.08)"
+            borderGlowColor="rgba(56, 189, 248, 0.45)"
+          >
             <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center mb-6">
               <Gem size={24} />
             </div>
@@ -90,8 +108,7 @@ export default function AboutPurpose() {
                 <span className="text-[#334155] text-xs font-medium">Continuous Innovation</span>
               </li>
             </ul>
-          </div>
-
+          </InteractiveTiltCard>
         </div>
 
       </div>

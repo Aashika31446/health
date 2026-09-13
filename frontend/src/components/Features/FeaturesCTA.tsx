@@ -1,8 +1,14 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { Play, Sparkles } from 'lucide-react';
+import { Play, Sparkles, ArrowRight } from 'lucide-react';
+import { motion } from 'framer-motion';
+import VideoModal from '@/components/Landing/VideoModal';
 
 export default function FeaturesCTA() {
+  const [isVideoOpen, setIsVideoOpen] = useState(false);
+
   return (
     <div className="w-full max-w-7xl mx-auto px-8 py-16 mb-12">
       <div className="flex flex-col lg:flex-row items-center gap-12">
@@ -36,22 +42,54 @@ export default function FeaturesCTA() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 relative z-10">
-            <Link 
-              href="/signup" 
-              className="flex-1 px-6 py-3 rounded-full bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] text-white font-semibold text-sm hover:opacity-90 transition-opacity shadow-md shadow-blue-500/20 flex items-center justify-center gap-2"
+            {/* Primary CTA */}
+            <motion.div
+              whileHover={{ scale: 1.03, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: "spring", stiffness: 400, damping: 20 }}
+              className="relative flex-1 group"
             >
-              Get Started Free &rarr;
-            </Link>
-            <button className="flex-1 px-6 py-3 rounded-full bg-white border border-[#CBD5E1] text-[#0F172A] font-semibold text-sm hover:bg-gray-50 transition-colors shadow-sm flex items-center justify-center gap-2 group">
-              <div className="bg-[#0F172A] text-white rounded-full p-0.5 group-hover:bg-[#3B82F6] transition-colors">
-                <Play size={12} fill="currentColor" />
+              <div className="absolute -inset-0.5 rounded-full bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] opacity-45 blur-md group-hover:opacity-85 transition-opacity duration-500 animate-pulse pointer-events-none" />
+              <Link 
+                href="/login" 
+                className="relative overflow-hidden w-full px-6 py-3.5 rounded-full bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] text-white font-semibold text-sm shadow-md shadow-blue-500/25 flex items-center justify-center gap-2 cursor-pointer z-10"
+              >
+                <motion.div 
+                  className="absolute top-0 -left-[100%] w-1/2 h-full bg-gradient-to-r from-transparent via-white/35 to-transparent skew-x-[-20deg] pointer-events-none"
+                  animate={{ left: ['-100%', '220%'] }}
+                  transition={{ repeat: Infinity, duration: 3.2, ease: "easeInOut", repeatDelay: 1.2 }}
+                />
+                <span className="relative z-10">Get Started Free</span>
+                <ArrowRight size={16} className="relative z-10 transition-transform duration-300 group-hover:translate-x-1.5" />
+              </Link>
+            </motion.div>
+
+            {/* Secondary CTA */}
+            <motion.button 
+              whileHover={{ scale: 1.03, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: "spring", stiffness: 400, damping: 20 }}
+              onClick={() => setIsVideoOpen(true)}
+              className="flex-1 px-6 py-3.5 rounded-full bg-white border border-[#CBD5E1] text-[#0F172A] font-semibold text-sm hover:border-blue-400/80 hover:bg-blue-50/40 transition-all shadow-sm hover:shadow-md hover:shadow-blue-500/10 flex items-center justify-center gap-2.5 group cursor-pointer"
+            >
+              <div className="relative flex items-center justify-center">
+                <span className="absolute -inset-1 rounded-full bg-blue-500/30 animate-ping group-hover:bg-blue-500/50 pointer-events-none" />
+                <div className="relative bg-[#0F172A] text-white rounded-full p-1 group-hover:bg-[#3B82F6] transition-colors duration-300 shadow-xs flex items-center justify-center">
+                  <Play size={11} fill="currentColor" className="ml-0.5 transition-transform duration-300 group-hover:scale-115" />
+                </div>
               </div>
-              Watch Demo
-            </button>
+              <span>Watch Demo</span>
+            </motion.button>
           </div>
         </div>
 
       </div>
+
+      <VideoModal 
+        isOpen={isVideoOpen} 
+        onClose={() => setIsVideoOpen(false)} 
+        videoSrc="/demovideo.mp4" 
+      />
     </div>
   );
 }

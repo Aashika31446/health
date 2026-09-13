@@ -1,27 +1,45 @@
+import os
+from pathlib import Path
+from dotenv import load_dotenv
+
+env_path = Path(__file__).resolve().parent / '.env'
+load_dotenv(dotenv_path=env_path, override=True)
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from app.api import documents, chat, voice, notifications
-import os
 import json
-from datetime import datetime
-import pytz
-from pywebpush import webpush, WebPushException
+from datetime import datetime, timezone, timedelta
+try:
+    from zoneinfo import ZoneInfo
+    IST_TZ = ZoneInfo("Asia/Kolkata")
+except Exception:
+    IST_TZ = timezone(timedelta(hours=5, minutes=30))
+try:
+    from pywebpush import webpush, WebPushException
+except ImportError:
+    webpush = None
+    WebPushException = Exception
 from supabase import create_client
 from apscheduler.schedulers.background import BackgroundScheduler
 from contextlib import asynccontextmanager
 
 def send_pill_notifications():
-    print("Checking for pill notifications...")
-    supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_SERVICE_KEY"))
+    supabase_url = os.getenv("SUPABASE_URL")
+    supabase_key = os.getenv("SUPABASE_SERVICE_KEY")
+    if not supabase_url or not supabase_key:
+        return
+
+    try:
+        supabase = create_client(supabase_url, supabase_key)
+    except Exception as init_err:
+        print("Notice initializing Supabase in scheduler:", init_err)
+        return
     
-    # Get current UTC time and convert to India Standard Time (IST) or let's just use UTC hours for demo,
-    # or just use a generic timezone. Let's use UTC for now to be safe, but wait, 8am IST is different.
-    # Actually, for demonstration, we check current hour in UTC and match it, or check IST.
-    # Since we want 8am, 1pm, 8pm, let's just use Indian Standard Time (Asia/Kolkata)
-    tz = pytz.timezone('Asia/Kolkata')
-    now = datetime.now(tz)
+    # Check current time in India Standard Time (Asia/Kolkata)
+    now = datetime.now(IST_TZ)
     
     current_time_of_day = None
     # Calculate current time of day based on hours
@@ -37,6 +55,7 @@ def send_pill_notifications():
             # 1. Fetch users and their pills scheduled for this time
             reminders_res = supabase.table("pill_reminders").select("*, prescriptions(user_id, medicine_name)").eq("time_of_day", current_time_of_day).eq("taken_status", False).execute()
             reminders = reminders_res.data
+
             
             if not reminders:
                 return
@@ -52,9 +71,22 @@ def send_pill_notifications():
                 user_pills[uid].append(r['prescriptions']['medicine_name'])
                 
             # 2. Fetch push subscriptions for these users
+            from app.api.notifications import load_local_subscriptions
+            local_subs = load_local_subscriptions()
+
             for uid, pills in user_pills.items():
-                subs_res = supabase.table("push_subscriptions").select("*").eq("user_id", uid).execute()
-                subs = subs_res.data
+                subs = []
+                try:
+                    subs_res = supabase.table("push_subscriptions").select("*").eq("user_id", uid).execute()
+                    if subs_res.data:
+                        subs.extend(subs_res.data)
+                except Exception as db_err:
+                    print("Notice fetching push_subscriptions from Supabase:", db_err)
+                
+                # Merge local subscriptions
+                for ls in local_subs:
+                    if ls.get("user_id") == uid and not any(s.get("endpoint") == ls.get("endpoint") for s in subs):
+                        subs.append(ls)
                 
                 if subs:
                     pill_list = ", ".join(pills)
@@ -95,9 +127,23 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="CuraMind API", lifespan=lifespan)
 
+cors_origins_env = os.getenv("CORS_ORIGINS", "")
+allowed_origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
+if cors_origins_env:
+    for o in cors_origins_env.split(","):
+        clean_o = o.strip()
+        if clean_o and clean_o not in allowed_origins:
+            allowed_origins.append(clean_o)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # In production, restrict this
+    allow_origins=allowed_origins,
+    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?|https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

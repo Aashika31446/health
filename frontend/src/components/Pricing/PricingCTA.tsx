@@ -1,5 +1,9 @@
+'use client';
+
 import React from 'react';
+import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function PricingCTA() {
   return (
@@ -27,9 +31,29 @@ export default function PricingCTA() {
 
         {/* Right Content */}
         <div className="flex flex-col items-center md:items-end relative z-10">
-          <button className="px-8 py-4 rounded-full bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] text-white font-semibold text-sm hover:opacity-90 transition-opacity shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 mb-3 w-full md:w-auto">
-            Get Started Free <ArrowRight size={18} />
-          </button>
+          <motion.div
+            whileHover={{ scale: 1.03, y: -2 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+            className="relative mb-3 w-full md:w-auto group"
+          >
+            {/* Ambient Breathing Glow */}
+            <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] opacity-45 blur-lg group-hover:opacity-85 transition-opacity duration-500 animate-pulse pointer-events-none" />
+
+            <Link href="/login" className="block w-full md:w-auto">
+              <button className="relative overflow-hidden px-8 py-4 rounded-full bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] text-white font-semibold text-sm shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 w-full md:w-auto cursor-pointer z-10">
+                {/* Diagonal Shimmer Light Sweep */}
+                <motion.div 
+                  className="absolute top-0 -left-[100%] w-1/2 h-full bg-gradient-to-r from-transparent via-white/35 to-transparent skew-x-[-20deg] pointer-events-none"
+                  animate={{ left: ['-100%', '220%'] }}
+                  transition={{ repeat: Infinity, duration: 3.2, ease: "easeInOut", repeatDelay: 1.2 }}
+                />
+
+                <span className="relative z-10">Get Started Free</span>
+                <ArrowRight size={18} className="relative z-10 transition-transform duration-300 group-hover:translate-x-1.5" />
+              </button>
+            </Link>
+          </motion.div>
           <span className="text-[#64748B] text-[11px] font-medium">
             No credit card required
           </span>

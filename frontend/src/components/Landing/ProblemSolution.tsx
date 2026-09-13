@@ -1,5 +1,8 @@
+'use client';
+
 import React from 'react';
 import { FileText, FlaskConical, Pill, UploadCloud, Bot, MessageSquare } from 'lucide-react';
+import InteractiveTiltCard from '@/components/ui/InteractiveTiltCard';
 
 export default function ProblemSolution() {
   return (
@@ -21,36 +24,57 @@ export default function ProblemSolution() {
 
         {/* 3 Problem Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col h-full">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#3B82F6] flex items-center justify-center mb-4">
+          <InteractiveTiltCard 
+            variant="float"
+            borderGlowColor="rgba(59, 130, 246, 0.45)"
+            glowColor="rgba(59, 130, 246, 0.08)"
+            className="bg-white p-5 rounded-2xl border border-gray-100 flex flex-col h-full"
+          >
+            <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#3B82F6] flex items-center justify-center mb-4 transition-transform duration-200">
               <FileText size={20} />
             </div>
             <h3 className="font-semibold text-[#0F172A] text-sm mb-2">Complex Medical Terms</h3>
             <p className="text-xs text-[#64748B] leading-relaxed">Hard to understand technical language and abbreviations.</p>
-          </div>
+          </InteractiveTiltCard>
           
-          <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col h-full">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#3B82F6] flex items-center justify-center mb-4">
+          <InteractiveTiltCard 
+            variant="spotlight"
+            borderGlowColor="rgba(14, 165, 233, 0.45)"
+            glowColor="rgba(14, 165, 233, 0.08)"
+            className="bg-white p-5 rounded-2xl border border-gray-100 flex flex-col h-full"
+          >
+            <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#3B82F6] flex items-center justify-center mb-4 transition-transform duration-200">
               <FlaskConical size={20} />
             </div>
             <h3 className="font-semibold text-[#0F172A] text-sm mb-2">Confusing Lab Values</h3>
             <p className="text-xs text-[#64748B] leading-relaxed">Not sure what your numbers really mean?</p>
-          </div>
+          </InteractiveTiltCard>
 
-          <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col h-full">
-            <div className="w-10 h-10 rounded-xl bg-purple-50 text-[#8B5CF6] flex items-center justify-center mb-4">
+          <InteractiveTiltCard 
+            variant="magnetic"
+            borderGlowColor="rgba(139, 92, 246, 0.45)"
+            glowColor="rgba(139, 92, 246, 0.08)"
+            className="bg-white p-5 rounded-2xl border border-gray-100 flex flex-col h-full"
+          >
+            <div className="w-10 h-10 rounded-xl bg-purple-50 text-[#8B5CF6] flex items-center justify-center mb-4 transition-transform duration-200">
               <Pill size={20} />
             </div>
             <h3 className="font-semibold text-[#0F172A] text-sm mb-2">No Instant Explanation</h3>
             <p className="text-xs text-[#64748B] leading-relaxed">Waiting for doctor's appointments can be stressful.</p>
-          </div>
+          </InteractiveTiltCard>
         </div>
       </div>
 
       {/* Right Area - The Solution */}
-      <div className="flex-[2] bg-gradient-to-br from-[#F8FAFC] to-[#EFF6FF] border border-blue-100 p-10 rounded-[32px] flex flex-col justify-between shadow-sm relative overflow-hidden">
+      <InteractiveTiltCard
+        variant="shimmer"
+        containerClassName="flex-[2]"
+        borderGlowColor="rgba(2, 132, 199, 0.5)"
+        glowColor="rgba(56, 189, 248, 0.1)"
+        className="bg-gradient-to-br from-[#F8FAFC] to-[#EFF6FF] border border-blue-100 p-10 rounded-[32px] flex flex-col justify-between relative overflow-hidden"
+      >
         {/* Decorative corner glow */}
-        <div className="absolute -top-20 -right-20 w-64 h-64 bg-blue-200/40 blur-3xl rounded-full"></div>
+        <div className="absolute -top-20 -right-20 w-64 h-64 bg-blue-200/40 blur-3xl rounded-full pointer-events-none"></div>
 
         <div className="relative z-10 mb-10">
           <div className="inline-flex px-3 py-1 bg-white/60 backdrop-blur-sm text-blue-600 font-bold text-[10px] tracking-widest uppercase rounded-full mb-6 border border-blue-100">
@@ -90,7 +114,7 @@ export default function ProblemSolution() {
             <p className="text-[11px] text-[#64748B]">Ask questions & get instant answers</p>
           </div>
         </div>
-      </div>
+      </InteractiveTiltCard>
 
     </div>
   );

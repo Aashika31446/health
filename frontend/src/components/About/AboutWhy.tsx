@@ -10,31 +10,16 @@ export default function AboutWhy() {
         <div className="flex-1 w-full relative flex justify-center lg:justify-start pt-10 lg:pt-0">
           
           {/* Main Mockup Placeholder */}
-          <div className="w-[320px] h-[320px] md:w-[400px] md:h-[400px] bg-gradient-to-br from-blue-50 to-indigo-100 rounded-[40px] shadow-2xl relative overflow-hidden flex items-center justify-center z-10 border-4 border-white">
-            {/* The abstract digital heart representation */}
-            <div className="relative w-48 h-48 flex items-center justify-center">
-              <div className="absolute inset-0 bg-blue-400/20 blur-xl rounded-full animate-pulse"></div>
-              <HeartPulse size={80} className="text-blue-500 z-10" />
-              
-              {/* Floating tech icons inside the box */}
-              <div className="absolute top-0 right-0 p-2 bg-white/60 backdrop-blur-sm rounded-lg shadow-sm border border-white">
-                 <FileText size={20} className="text-blue-600" />
-              </div>
-              <div className="absolute bottom-4 left-0 p-2 bg-white/60 backdrop-blur-sm rounded-lg shadow-sm border border-white">
-                 <FileText size={20} className="text-blue-600" />
-              </div>
-              <div className="absolute top-1/2 right-0 translate-x-4 p-2 bg-white/60 backdrop-blur-sm rounded-lg shadow-sm border border-white">
-                 <BarChart size={20} className="text-blue-600" />
-              </div>
-            </div>
-            
-            <div className="absolute bottom-4 text-center w-full text-blue-800/40 font-semibold text-xs">
-              Digital Healthcare Placeholder
-            </div>
+          <div className="w-[320px] h-[320px] md:w-[400px] md:h-[400px] rounded-[40px] shadow-2xl relative flex items-center justify-center z-10 border-4 border-white bg-white">
+            <img 
+              src="/curaminlabreport.png" 
+              alt="CuraMind AI Robot with Medical Report" 
+              className="w-full h-full object-cover rounded-[36px]"
+            />
           </div>
 
           {/* Floating Cursive Text */}
-          <div className="absolute bottom-0 md:-bottom-4 right-0 md:right-10 rotate-[-12deg] font-medium text-blue-400 text-lg md:text-xl tracking-tight z-20" style={{ fontFamily: "'Caveat', 'Comic Sans MS', cursive" }}>
+          <div className="absolute bottom-[-10px] md:bottom-[-20px] right-[-10px] md:right-[-30px] rotate-[-12deg] font-medium text-blue-400 text-lg md:text-xl tracking-tight z-20" style={{ fontFamily: "'Caveat', 'Comic Sans MS', cursive" }}>
             Better <br/>
             Health Insights <br/>
             Brighter Tomorrows

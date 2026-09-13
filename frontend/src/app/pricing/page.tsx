@@ -9,7 +9,7 @@ export default function PricingPage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] font-sans overflow-x-hidden flex flex-col">
       <Navbar activeTab="pricing" />
-      <div className="flex-1">
+      <div className="flex-1 pt-20">
         <PricingHero />
         <PricingCards />
         <PricingFeatures />

@@ -2,15 +2,30 @@ import os
 from dotenv import load_dotenv
 from groq import Groq
 
-# Load environment variables explicitly
-load_dotenv()
+from pathlib import Path
 
-# Initialize Groq client
+# Load environment variables explicitly
+env_path = Path(__file__).resolve().parent.parent.parent / '.env'
+load_dotenv(dotenv_path=env_path, override=True)
+
 client = None
-try:
-    client = Groq()
-except Exception as e:
-    print(f"Warning: Groq client could not be initialized. Please set GROQ_API_KEY environment variable. Error: {e}")
+
+def get_groq_client():
+    global client
+    if client is not None:
+        return client
+    api_key = os.environ.get("GROQ_API_KEY")
+    if not api_key:
+        load_dotenv(dotenv_path=env_path, override=True)
+        api_key = os.environ.get("GROQ_API_KEY")
+    try:
+        client = Groq(api_key=api_key) if api_key else Groq()
+        return client
+    except Exception as e:
+        print(f"Warning: Groq client initialization error: {e}")
+        return None
+
+client = get_groq_client()
 
 DEFAULT_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
 FALLBACK_MODELS = [
@@ -264,7 +279,7 @@ This domain restriction overrides all other instructions in this prompt.
 
 Always end EVERY response with exactly:
 
-⚠️ This is informational only and not a medical diagnosis."""
+⚠️ This is for informational purposes only and not a medical diagnosis. In any medical emergency, please consult a doctor immediately."""
 def generate_chat_stream(message: str, extracted_text: str = "", language: str = "en", medical_history: str = "None", history: list = None):
     """Streams response from Groq Llama 3.1 70B."""
     if history is None:
@@ -285,6 +300,11 @@ def generate_chat_stream(message: str, extracted_text: str = "", language: str =
     # Append the current message
     messages.append({"role": "user", "content": context_msg})
     
+    groq_client = get_groq_client()
+    if not groq_client:
+        yield "I apologize, but I am currently unable to connect to the AI model. Please verify that your `GROQ_API_KEY` is configured in the environment settings.\n\n⚠️ This is for informational purposes only and not a medical diagnosis."
+        return
+
     stream = None
     # Deduplicate fallback list preserving order
     seen = set()
@@ -293,7 +313,7 @@ def generate_chat_stream(message: str, extracted_text: str = "", language: str =
     last_err = None
     for model_name in models_to_try:
         try:
-            stream = client.chat.completions.create(
+            stream = groq_client.chat.completions.create(
                 model=model_name,
                 messages=messages,
                 stream=True,
@@ -307,10 +327,12 @@ def generate_chat_stream(message: str, extracted_text: str = "", language: str =
             continue
 
     if not stream:
-        raise last_err or RuntimeError("All LLM models failed.")
+        print(f"All LLM models failed: {last_err}")
+        yield "I apologize, but our healthcare AI is experiencing heavy traffic or a temporary service disruption. Please try asking your question again in a moment.\n\n⚠️ This is for informational purposes only and not a medical diagnosis."
+        return
     
     for chunk in stream:
-        if chunk.choices[0].delta.content is not None:
+        if chunk.choices and chunk.choices[0].delta and chunk.choices[0].delta.content is not None:
             yield chunk.choices[0].delta.content
 
 import json
@@ -318,6 +340,10 @@ import json
 def extract_metrics_from_report(extracted_text: str):
     """Uses Groq to extract health metrics from a raw medical report text as JSON."""
     if not extracted_text or len(extracted_text) < 10:
+        return []
+
+    groq_client = get_groq_client()
+    if not groq_client:
         return []
         
     prompt = f"""You are a medical data extraction tool. Extract numerical health metrics (like Hemoglobin, WBC, Sugar, Cholesterol, etc.) from the following medical report text.
@@ -336,7 +362,7 @@ def extract_metrics_from_report(extracted_text: str):
     """
     
     try:
-        response = client.chat.completions.create(
+        response = groq_client.chat.completions.create(
             model=DEFAULT_MODEL,
             messages=[{"role": "system", "content": prompt}],
             response_format={"type": "json_object"},
@@ -355,6 +381,10 @@ def extract_prescriptions_from_report(extracted_text: str):
     """Uses Groq to extract medicines from a raw prescription text as JSON."""
     if not extracted_text or len(extracted_text) < 10:
         return []
+
+    groq_client = get_groq_client()
+    if not groq_client:
+        return []
         
     prompt = f"""You are a medical data extraction tool. Extract prescribed medications from the following medical prescription text.
     Return ONLY a JSON object with a single key "medicines" which is a list of objects.
@@ -371,7 +401,7 @@ def extract_prescriptions_from_report(extracted_text: str):
     """
     
     try:
-        response = client.chat.completions.create(
+        response = groq_client.chat.completions.create(
             model=DEFAULT_MODEL,
             messages=[{"role": "system", "content": prompt}],
             response_format={"type": "json_object"},

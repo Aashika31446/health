@@ -1,9 +1,12 @@
+'use client';
+
 import React from 'react';
 import { 
   FileText, UploadCloud, CheckCircle2, Lightbulb, 
   MessageSquare, Pill, Globe, LayoutDashboard, ShieldCheck, 
   ArrowRight, Search, Activity, FileCheck, Lock, Droplet
 } from 'lucide-react';
+import InteractiveTiltCard from '@/components/ui/InteractiveTiltCard';
 
 export default function FeaturesBentoGrid() {
   return (
@@ -15,7 +18,13 @@ export default function FeaturesBentoGrid() {
         {/* --- ROW 1 --- */}
 
         {/* 1. Smart Report Analysis */}
-        <div className="lg:col-span-5 bg-white rounded-3xl p-8 border border-gray-100 shadow-sm flex flex-col relative overflow-hidden">
+        <InteractiveTiltCard 
+          variant="tilt"
+          containerClassName="lg:col-span-5"
+          maxTilt={6}
+          borderGlowColor="rgba(59, 130, 246, 0.5)"
+          className="bg-white rounded-3xl p-8 border border-gray-100 flex flex-col relative overflow-hidden h-full"
+        >
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
               <FileText size={20} />
@@ -85,10 +94,16 @@ export default function FeaturesBentoGrid() {
               <p className="text-[10px] text-blue-600 font-medium mt-2 flex items-center gap-1 cursor-pointer hover:underline">View Full Analysis <ArrowRight size={10}/></p>
             </div>
           </div>
-        </div>
+        </InteractiveTiltCard>
 
         {/* 2. Simple AI Explanations */}
-        <div className="lg:col-span-4 bg-[#F8FAFC] rounded-3xl p-8 border border-gray-100 shadow-sm flex flex-col">
+        <InteractiveTiltCard 
+          variant="shimmer"
+          containerClassName="lg:col-span-4"
+          borderGlowColor="rgba(147, 51, 234, 0.45)"
+          glowColor="rgba(147, 51, 234, 0.08)"
+          className="bg-[#F8FAFC] rounded-3xl p-8 border border-gray-100 flex flex-col h-full"
+        >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
               <Lightbulb size={20} />
@@ -118,10 +133,16 @@ export default function FeaturesBentoGrid() {
             <CheckCircle2 size={14} />
             Explained in simple, clear language
           </div>
-        </div>
+        </InteractiveTiltCard>
 
         {/* 3. Health Insights (Chart alternative) */}
-        <div className="lg:col-span-3 bg-white rounded-3xl p-8 border border-gray-100 shadow-sm flex flex-col">
+        <InteractiveTiltCard 
+          variant="float"
+          containerClassName="lg:col-span-3"
+          borderGlowColor="rgba(13, 148, 136, 0.45)"
+          glowColor="rgba(13, 148, 136, 0.08)"
+          className="bg-white rounded-3xl p-8 border border-gray-100 flex flex-col h-full"
+        >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0">
               <Activity size={20} />
@@ -155,12 +176,18 @@ export default function FeaturesBentoGrid() {
               <span className="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-1 rounded font-medium">Normal</span>
             </div>
           </div>
-        </div>
+        </InteractiveTiltCard>
 
         {/* --- ROW 2 --- */}
 
         {/* 4. Chat With Your Reports */}
-        <div className="lg:col-span-4 bg-white rounded-3xl p-8 border border-gray-100 shadow-sm flex flex-col">
+        <InteractiveTiltCard 
+          variant="glow-pulse"
+          containerClassName="lg:col-span-4"
+          borderGlowColor="rgba(217, 70, 239, 0.55)"
+          glowColor="rgba(217, 70, 239, 0.12)"
+          className="bg-white rounded-3xl p-8 border border-gray-100 flex flex-col h-full"
+        >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-fuchsia-50 text-fuchsia-600 flex items-center justify-center shrink-0">
               <MessageSquare size={20} />
@@ -202,12 +229,17 @@ export default function FeaturesBentoGrid() {
                </div>
             </div>
           </div>
-        </div>
+        </InteractiveTiltCard>
 
         {/* 5. Prescription Analysis & Secure */}
         <div className="lg:col-span-4 flex flex-col gap-6">
           {/* Prescription Analysis */}
-          <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm flex-1 flex flex-col">
+          <InteractiveTiltCard 
+            variant="spotlight"
+            borderGlowColor="rgba(99, 102, 241, 0.45)"
+            glowColor="rgba(99, 102, 241, 0.08)"
+            className="bg-white rounded-3xl p-8 border border-gray-100 flex-1 flex flex-col h-full"
+          >
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
                 <Pill size={20} />
@@ -251,10 +283,15 @@ export default function FeaturesBentoGrid() {
                  </div>
                </div>
             </div>
-          </div>
+          </InteractiveTiltCard>
 
           {/* Secure & Private (Small horizontal card) */}
-          <div className="bg-[#F8FAFC] rounded-3xl p-5 border border-gray-100 shadow-sm flex items-center gap-4">
+          <InteractiveTiltCard 
+            variant="magnetic"
+            borderGlowColor="rgba(37, 99, 235, 0.45)"
+            glowColor="rgba(37, 99, 235, 0.08)"
+            className="bg-[#F8FAFC] rounded-3xl p-5 border border-gray-100 flex items-center gap-4"
+          >
             <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-500/20">
               <ShieldCheck size={20} />
             </div>
@@ -262,13 +299,18 @@ export default function FeaturesBentoGrid() {
               <h3 className="font-bold text-[#0F172A] text-[15px]">Secure & Private</h3>
               <p className="text-[#64748B] text-[12px] mt-0.5">End-to-end encrypted. Your data stays private.</p>
             </div>
-          </div>
+          </InteractiveTiltCard>
         </div>
 
         {/* 6. Languages & Dashboard */}
         <div className="lg:col-span-4 flex flex-col gap-6">
            {/* Multilingual Support */}
-           <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm flex-1">
+           <InteractiveTiltCard 
+             variant="border-flow"
+             borderGlowColor="rgba(6, 182, 212, 0.55)"
+             glowColor="rgba(6, 182, 212, 0.12)"
+             className="bg-white rounded-3xl p-6 border border-gray-100 flex-1 h-full"
+           >
              <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center shrink-0">
                   <Globe size={20} />
@@ -287,10 +329,15 @@ export default function FeaturesBentoGrid() {
                 <span className="bg-[#F8FAFC] border border-gray-200 text-[#334155] text-[11px] font-medium px-3 py-1.5 rounded-full hover:bg-gray-50 transition-colors">मराठी</span>
                 <span className="bg-[#F8FAFC] border border-gray-200 text-[#334155] text-[11px] font-medium px-3 py-1.5 rounded-full hover:bg-gray-50 transition-colors">ગુજરાતી</span>
               </div>
-           </div>
+           </InteractiveTiltCard>
 
            {/* Personal Health Dashboard */}
-           <div className="bg-[#F8FAFC] rounded-3xl p-6 border border-gray-100 shadow-sm flex-1">
+           <InteractiveTiltCard 
+             variant="float"
+             borderGlowColor="rgba(249, 115, 22, 0.45)"
+             glowColor="rgba(249, 115, 22, 0.08)"
+             className="bg-[#F8FAFC] rounded-3xl p-6 border border-gray-100 flex-1 h-full"
+           >
              <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center shrink-0">
                   <LayoutDashboard size={20} />
@@ -317,7 +364,7 @@ export default function FeaturesBentoGrid() {
                   <span className="text-[9px] text-[#64748B]">Active Chats</span>
                 </div>
               </div>
-           </div>
+           </InteractiveTiltCard>
         </div>
 
       </div>

@@ -1,10 +1,13 @@
 "use client";
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { CheckCircle2, XCircle, User, Crown, FileText, Users, ArrowRight } from 'lucide-react';
+import InteractiveTiltCard from '@/components/ui/InteractiveTiltCard';
 
 export default function PricingCards() {
   const [isYearly, setIsYearly] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<'free' | 'plus' | 'pro' | 'enterprise'>('plus');
 
   return (
     <div className="w-full max-w-7xl mx-auto px-6 pb-20 relative z-10 flex flex-col items-center">
@@ -40,7 +43,18 @@ export default function PricingCards() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
         
         {/* 1. Free */}
-        <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm flex flex-col hover:shadow-md transition-shadow">
+        <InteractiveTiltCard
+          variant="float"
+          containerClassName={`h-full flex flex-col transition-all duration-300 ${selectedPlan === 'free' ? 'lg:-translate-y-4' : 'hover:lg:-translate-y-1'}`}
+          className={`bg-white rounded-3xl p-8 border-2 transition-all duration-300 flex flex-col h-full relative cursor-pointer ${
+            selectedPlan === 'free'
+              ? 'border-purple-500 shadow-xl shadow-purple-900/10 ring-1 ring-purple-500/20'
+              : 'border-gray-100 shadow-sm hover:border-gray-200'
+          }`}
+          glowColor={selectedPlan === 'free' ? 'rgba(168, 85, 247, 0.12)' : 'rgba(2, 132, 199, 0.08)'}
+          borderGlowColor={selectedPlan === 'free' ? 'rgba(168, 85, 247, 0.6)' : 'rgba(56, 189, 248, 0.45)'}
+          onClick={() => setSelectedPlan('free')}
+        >
           <div className="flex justify-between items-start mb-6">
             <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center">
               <User size={24} />
@@ -65,13 +79,30 @@ export default function PricingCards() {
             <FeatureItem text="Advanced health insights" missing />
           </div>
 
-          <button className="w-full py-3.5 rounded-full border border-[#CBD5E1] text-[#0F172A] font-semibold text-sm hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 mt-auto">
-            Get Started Free <ArrowRight size={16} />
-          </button>
-        </div>
+          <Link href="/login" onClick={() => setSelectedPlan('free')} className="w-full mt-auto block">
+            <button className={`w-full py-3.5 rounded-full font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer ${
+              selectedPlan === 'free'
+                ? 'bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] text-white hover:opacity-90 shadow-lg shadow-blue-500/20'
+                : 'border border-[#CBD5E1] text-[#0F172A] hover:bg-gray-50'
+            }`}>
+              Get Started Free <ArrowRight size={16} />
+            </button>
+          </Link>
+        </InteractiveTiltCard>
 
         {/* 2. Plus */}
-        <div className="bg-white rounded-3xl p-8 border-2 border-purple-500 shadow-xl shadow-purple-900/5 flex flex-col relative transform lg:-translate-y-4">
+        <InteractiveTiltCard
+          variant="border-flow"
+          containerClassName={`h-full flex flex-col transition-all duration-300 ${selectedPlan === 'plus' ? 'lg:-translate-y-4' : 'hover:lg:-translate-y-1'}`}
+          className={`bg-white rounded-3xl p-8 border-2 transition-all duration-300 flex flex-col h-full relative cursor-pointer ${
+            selectedPlan === 'plus'
+              ? 'border-purple-500 shadow-xl shadow-purple-900/10 ring-1 ring-purple-500/20'
+              : 'border-gray-100 shadow-sm hover:border-gray-200'
+          }`}
+          glowColor={selectedPlan === 'plus' ? 'rgba(168, 85, 247, 0.12)' : 'rgba(168, 85, 247, 0.08)'}
+          borderGlowColor={selectedPlan === 'plus' ? 'rgba(168, 85, 247, 0.6)' : 'rgba(168, 85, 247, 0.35)'}
+          onClick={() => setSelectedPlan('plus')}
+        >
           <div className="flex justify-between items-start mb-6">
             <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-500 flex items-center justify-center">
               <Crown size={24} />
@@ -98,13 +129,30 @@ export default function PricingCards() {
             <FeatureItem text="Advanced disease risk insights" missing />
           </div>
 
-          <button className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] text-white font-semibold text-sm hover:opacity-90 transition-opacity shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 mt-auto">
-            Start Plus Plan <ArrowRight size={16} />
-          </button>
-        </div>
+          <Link href="/login" onClick={() => setSelectedPlan('plus')} className="w-full mt-auto block">
+            <button className={`w-full py-3.5 rounded-full font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer ${
+              selectedPlan === 'plus'
+                ? 'bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] text-white hover:opacity-90 shadow-lg shadow-blue-500/20'
+                : 'border border-[#CBD5E1] text-[#0F172A] hover:bg-gray-50'
+            }`}>
+              Start Plus Plan <ArrowRight size={16} />
+            </button>
+          </Link>
+        </InteractiveTiltCard>
 
         {/* 3. Pro */}
-        <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm flex flex-col hover:shadow-md transition-shadow">
+        <InteractiveTiltCard
+          variant="shimmer"
+          containerClassName={`h-full flex flex-col transition-all duration-300 ${selectedPlan === 'pro' ? 'lg:-translate-y-4' : 'hover:lg:-translate-y-1'}`}
+          className={`bg-white rounded-3xl p-8 border-2 transition-all duration-300 flex flex-col h-full relative cursor-pointer ${
+            selectedPlan === 'pro'
+              ? 'border-purple-500 shadow-xl shadow-purple-900/10 ring-1 ring-purple-500/20'
+              : 'border-gray-100 shadow-sm hover:border-gray-200'
+          }`}
+          glowColor={selectedPlan === 'pro' ? 'rgba(168, 85, 247, 0.12)' : 'rgba(16, 185, 129, 0.08)'}
+          borderGlowColor={selectedPlan === 'pro' ? 'rgba(168, 85, 247, 0.6)' : 'rgba(16, 185, 129, 0.45)'}
+          onClick={() => setSelectedPlan('pro')}
+        >
           <div className="flex justify-between items-start mb-6">
             <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-500 flex items-center justify-center">
               <FileText size={24} />
@@ -131,13 +179,30 @@ export default function PricingCards() {
             <FeatureItem text="Priority support" color="emerald" />
           </div>
 
-          <button className="w-full py-3.5 rounded-full border border-[#CBD5E1] text-[#0F172A] font-semibold text-sm hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 mt-auto">
-            Start Pro Plan <ArrowRight size={16} />
-          </button>
-        </div>
+          <Link href="/login" onClick={() => setSelectedPlan('pro')} className="w-full mt-auto block">
+            <button className={`w-full py-3.5 rounded-full font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer ${
+              selectedPlan === 'pro'
+                ? 'bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] text-white hover:opacity-90 shadow-lg shadow-blue-500/20'
+                : 'border border-[#CBD5E1] text-[#0F172A] hover:bg-gray-50'
+            }`}>
+              Start Pro Plan <ArrowRight size={16} />
+            </button>
+          </Link>
+        </InteractiveTiltCard>
 
         {/* 4. Enterprise */}
-        <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm flex flex-col hover:shadow-md transition-shadow">
+        <InteractiveTiltCard
+          variant="tilt"
+          containerClassName={`h-full flex flex-col transition-all duration-300 ${selectedPlan === 'enterprise' ? 'lg:-translate-y-4' : 'hover:lg:-translate-y-1'}`}
+          className={`bg-white rounded-3xl p-8 border-2 transition-all duration-300 flex flex-col h-full relative cursor-pointer ${
+            selectedPlan === 'enterprise'
+              ? 'border-purple-500 shadow-xl shadow-purple-900/10 ring-1 ring-purple-500/20'
+              : 'border-gray-100 shadow-sm hover:border-gray-200'
+          }`}
+          glowColor={selectedPlan === 'enterprise' ? 'rgba(168, 85, 247, 0.12)' : 'rgba(217, 70, 239, 0.08)'}
+          borderGlowColor={selectedPlan === 'enterprise' ? 'rgba(168, 85, 247, 0.6)' : 'rgba(217, 70, 239, 0.45)'}
+          onClick={() => setSelectedPlan('enterprise')}
+        >
           <div className="flex justify-between items-start mb-6">
             <div className="w-12 h-12 rounded-2xl bg-fuchsia-50 text-fuchsia-500 flex items-center justify-center">
               <Users size={24} />
@@ -161,10 +226,17 @@ export default function PricingCards() {
             <FeatureItem text="24/7 priority support" color="blue" />
           </div>
 
-          <button className="w-full py-3.5 rounded-full border border-[#CBD5E1] text-[#0F172A] font-semibold text-sm hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 mt-auto">
+          <button 
+            onClick={() => setSelectedPlan('enterprise')}
+            className={`w-full py-3.5 rounded-full font-semibold text-sm transition-all flex items-center justify-center gap-2 mt-auto cursor-pointer ${
+              selectedPlan === 'enterprise'
+                ? 'bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] text-white hover:opacity-90 shadow-lg shadow-blue-500/20'
+                : 'border border-[#CBD5E1] text-[#0F172A] hover:bg-gray-50'
+            }`}
+          >
             Contact Sales <ArrowRight size={16} />
           </button>
-        </div>
+        </InteractiveTiltCard>
 
       </div>
     </div>
